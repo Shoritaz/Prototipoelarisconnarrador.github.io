@@ -168,7 +168,7 @@ h2.t{font-size:clamp(2.2rem,6vw,3.8rem);font-weight:900;margin-bottom:8px}
 .vines.l{left:0}.vines.r{right:0;transform:scaleX(-1)}
 .vines.grow{opacity:1}
 .vines svg{width:100%;height:100%;overflow:visible}
-.vn{fill:none;stroke:url(#gv);stroke-width:3.2;stroke-linecap:round}
+.vn{fill:none;stroke:url(#gv);stroke-width:1.6;stroke-linecap:round}
 .grow .vn{animation:draw 3.6s ease-out both}
 @keyframes draw{to{stroke-dashoffset:0}}
 .fl,.lf{transform:scale(0);transform-origin:0 0}
@@ -186,13 +186,13 @@ h2.t{font-size:clamp(2.2rem,6vw,3.8rem);font-weight:900;margin-bottom:8px}
 .lfp{fill:var(--c);stroke:var(--e);stroke-width:1}
 .spp{fill:var(--c)}
 @media(prefers-reduced-motion:reduce){.vn{stroke-dashoffset:0!important}.fl,.lf{transform:scale(var(--s))!important}.sp{opacity:.8}}
-</style>
+.vn.si{stroke:url(#gs)}.vn.tn{stroke-width:1.1}.grow .tn{animation-duration:1.5s}.lfp{stroke-width:.8}</style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="warp"><feTurbulence type="fractalNoise" baseFrequency=".008 .02" numOctaves="1" seed="3"><animate attributeName="baseFrequency" dur="1.4s" values=".008 .02;.02 .05;.008 .02" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="38"/></filter></svg>
 <canvas id="petals" aria-hidden="true"></canvas>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<linearGradient id="gv" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e8b93e"/><stop offset=".5" stop-color="#e9edf7"/><stop offset="1" stop-color="#fbe08a"/></linearGradient>
+<linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="900" x2="0" y2="0"><stop offset="0" stop-color="#b9c3d9"/><stop offset=".5" stop-color="#ffffff"/><stop offset="1" stop-color="#cfd6e6"/></linearGradient><linearGradient id="gv" gradientUnits="userSpaceOnUse" x1="0" y1="900" x2="0" y2="0"><stop offset="0" stop-color="#e8b93e"/><stop offset=".5" stop-color="#e9edf7"/><stop offset="1" stop-color="#fbe08a"/></linearGradient>
 <symbol id="rose" viewBox="-50 -50 100 100" overflow="visible"><g class="rpg"><ellipse class="rp" cx="0" cy="-24" rx="20" ry="26" transform="rotate(0)"/><ellipse class="rp" cx="0" cy="-24" rx="20" ry="26" transform="rotate(72)"/><ellipse class="rp" cx="0" cy="-24" rx="20" ry="26" transform="rotate(144)"/><ellipse class="rp" cx="0" cy="-24" rx="20" ry="26" transform="rotate(216)"/><ellipse class="rp" cx="0" cy="-24" rx="20" ry="26" transform="rotate(288)"/><ellipse class="rq" cx="0" cy="-13" rx="12" ry="16" transform="rotate(36)"/><ellipse class="rq" cx="0" cy="-13" rx="12" ry="16" transform="rotate(108)"/><ellipse class="rq" cx="0" cy="-13" rx="12" ry="16" transform="rotate(180)"/><ellipse class="rq" cx="0" cy="-13" rx="12" ry="16" transform="rotate(252)"/><ellipse class="rq" cx="0" cy="-13" rx="12" ry="16" transform="rotate(324)"/><path class="rs" d="M-5 0a5 5 0 1 1 5 5a8 8 0 1 1 -8 -8"/></g></symbol>
 <symbol id="blos" viewBox="-50 -50 100 100" overflow="visible"><circle class="rp" cx="0" cy="-20" r="16" transform="rotate(0)"/><circle class="rp" cx="0" cy="-20" r="16" transform="rotate(72)"/><circle class="rp" cx="0" cy="-20" r="16" transform="rotate(144)"/><circle class="rp" cx="0" cy="-20" r="16" transform="rotate(216)"/><circle class="rp" cx="0" cy="-20" r="16" transform="rotate(288)"/><circle class="bc" r="8"/></symbol>
 <symbol id="leaf" viewBox="0 -12 32 24" overflow="visible"><path class="lfp" d="M0 0C14-12 28-8 34 2C22 12 8 10 0 0Z"/></symbol>
@@ -294,31 +294,29 @@ const P=Array.from({length:30},(_,i)=>({x:Math.random()*W,y:Math.random()*H,r:4+
 (function tick(){cx.clearRect(0,0,W,H);for(const p of P){if(!rm){p.y+=p.s;p.a+=p.w;p.x+=Math.sin(p.a*3)*.6}if(p.y>H+10){p.y=-10;p.x=Math.random()*W}cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.globalAlpha=.55;cx.fillStyle=p.c;cx.beginPath();cx.ellipse(0,0,p.r,p.r/2,0,0,7);cx.fill();cx.restore()}if(!rm)requestAnimationFrame(tick)})();
 (function(){
 const NS="http://www.w3.org/2000/svg",R=(a,b)=>a+Math.random()*(b-a);
-const COL=[["#c9a0ff","#fbe08a"],["#ff7eb6","#e8b93e"],["#9b5de5","#e9edf7"],["#f6f1ff","#e8b93e"],["#ff9ccf","#e9edf7"]];
 function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function draw(path,delay){const L=path.getTotalLength();path.style.strokeDasharray=L;path.style.strokeDashoffset=L;path.style.animationDelay=delay+"s";return L}
 function build(host,side){
   const svg=el("svg",{viewBox:"0 0 160 900",preserveAspectRatio:"xMidYMax slice"},host);
-  [250,420,590].forEach((top,v)=>{
-    const g=el("g",{class:"sw"},svg),vd=v*.5+side*.25,x0=24+v*46;
+  [220,330,450,560,680,790].forEach((top,v)=>{
+    const g=el("g",{class:"sw"},svg),vd=v*.35+side*.2,x0=14+v*26,si=v%2===1,cl=si?" si":"";
     let x=x0,y=900,d="M"+x+" "+y;
-    while(y>top){const ny=y-130,nx=x0+R(-30,30);d+=" C"+(x+R(-25,25))+" "+(y-45)+" "+(nx+R(-25,25))+" "+(ny+45)+" "+nx+" "+ny;x=nx;y=ny}
-    const path=el("path",{class:"vn",d},g),L=path.getTotalLength();
-    path.style.strokeDasharray=L;path.style.strokeDashoffset=L;path.style.animationDelay=vd+"s";
-    const at=t=>path.getPointAtLength(L*t);
-    for(let i=0;i<6;i++){
-      const t=.1+i*.15,pt=at(t),w=el("g",{transform:"translate("+pt.x+" "+pt.y+") rotate("+((i%2?-1:1)*R(25,70)-90)+")"},g),gold=i%2===0;
-      const u=el("use",{href:"#leaf",class:"lf",width:32,height:24,x:0,y:-12},w);
-      u.setAttribute("style","--s:"+R(.8,1.3)+";--rot:0deg;--d:"+(vd+t*3.4)+"s;--c:"+(gold?"#e8b93e":"#e9edf7")+";--e:"+(gold?"#fff1b8":"#8b6cc9"));
+    while(y>top){const ny=y-110,nx=x0+R(-24,24);d+=" C"+(x+R(-30,30))+" "+(y-40)+" "+(nx+R(-30,30))+" "+(ny+40)+" "+nx+" "+ny;x=nx;y=ny}
+    const path=el("path",{class:"vn"+cl,d},g),L=draw(path,vd),at=t=>path.getPointAtLength(L*t),D=t=>vd+t*3.4;
+    for(let i=0;i<5;i++){
+      const t=.16+i*.17,pt=at(t),dir=i%2?1:-1,a0=R(0,6.28),r0=R(9,17),cx=pt.x-Math.cos(a0)*r0,cy=pt.y-Math.sin(a0)*r0;
+      let s="";for(let k=0;k<=26;k++){const a=a0+dir*k*.42,r=r0*(1-k/30);s+=(k?"L":"M")+(cx+Math.cos(a)*r).toFixed(1)+" "+(cy+Math.sin(a)*r).toFixed(1)}
+      draw(el("path",{class:"vn tn"+cl,d:s},g),D(t));
     }
-    [[.3,"#rose"],[.5,"#blos"],[.68,"#rose"],[.84,"#blos"],[1,"#rose"]].forEach(([t,h],i)=>{
-      const pt=at(t),c=COL[(i+v*2+side)%5],w=el("g",{transform:"translate("+pt.x+" "+pt.y+")"},g);
-      const u=el("use",{href:h,class:"fl",width:100,height:100,x:-50,y:-50},w);
-      u.setAttribute("style","--s:"+R(.38,.62)*(t===1?1.15:1)+";--rot:"+R(-25,25)+"deg;--d:"+(vd+t*3.4)+"s;--c:"+c[0]+";--e:"+c[1]);
-    });
-    for(let i=0;i<3;i++){
-      const pt=at(R(.2,1)),w=el("g",{transform:"translate("+(pt.x+R(-26,26))+" "+(pt.y+R(-26,26))+")"},g);
+    for(let i=0;i<8;i++){
+      const t=.07+i*.115,pt=at(t),gold=(i+v)%2===0,w=el("g",{transform:"translate("+pt.x+" "+pt.y+") rotate("+((i%2?-1:1)*R(35,75)-90)+")"},g);
+      const u=el("use",{href:"#leaf",class:"lf",width:32,height:24,x:0,y:-12},w);
+      u.setAttribute("style","--s:"+R(.45,.8)+";--rot:0deg;--d:"+D(t)+"s;--c:"+(gold?"#e8b93e":"#e9edf7")+";--e:"+(gold?"#fff1b8":"#9a86c9"));
+    }
+    for(let i=0;i<2;i++){
+      const pt=at(R(.3,1)),w=el("g",{transform:"translate("+(pt.x+R(-18,18))+" "+(pt.y+R(-18,18))+")"},g);
       const u=el("use",{href:"#star",class:"sp",width:16,height:16,x:-8,y:-8},w);
-      u.setAttribute("style","--s:"+R(.9,1.6)+";--d:"+(vd+3.2+R(0,2.6))+"s;--c:"+(i%2?"#fbe08a":"#e9edf7"));
+      u.setAttribute("style","--s:"+R(.5,.9)+";--d:"+(vd+3.2+R(0,2.6))+"s;--c:"+(i%2?"#fbe08a":"#e9edf7"));
     }
   });
 }
